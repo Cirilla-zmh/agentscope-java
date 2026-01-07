@@ -42,8 +42,8 @@ final class StreamChatResponseAggregator {
     private final ToolCallsAccumulator toolCallsAcc = new ToolCallsAccumulator();
 
     // Usage
-    private final AtomicInteger inputTokens = new AtomicInteger(0);
-    private final AtomicInteger outputTokens = new AtomicInteger(0);
+    private int inputTokens = 0;
+    private int outputTokens = 0;
     private double time;
 
     private String finishReason;
@@ -73,8 +73,8 @@ final class StreamChatResponseAggregator {
 
         ChatUsage usage = chunk.getUsage();
         if (usage != null) {
-            inputTokens.addAndGet(usage.getInputTokens());
-            outputTokens.addAndGet(usage.getOutputTokens());
+            inputTokens = usage.getInputTokens();
+            outputTokens = usage.getOutputTokens();
             time = usage.getTime();
         }
 
@@ -95,8 +95,8 @@ final class StreamChatResponseAggregator {
                 .content(contentBlocks)
                 .usage(
                         ChatUsage.builder()
-                                .inputTokens(inputTokens.get())
-                                .outputTokens(outputTokens.get())
+                                .inputTokens(inputTokens)
+                                .outputTokens(outputTokens)
                                 .time(time)
                                 .build())
                 .finishReason(finishReason)
